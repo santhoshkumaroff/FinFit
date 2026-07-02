@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinFit Architecture Review — Existing Plan vs Production Plan</title>
+<meta name="description" content="A production-grade architecture review comparing FinFit's existing plan against the recommended production-ready plan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Ledger progress rail -->
+<div class="ledger-rail" aria-hidden="true"><div class="ledger-rail-fill" id="ledgerFill"></div></div>
+
+<!-- Nav -->
+<header class="nav" id="siteNav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">
+      <span class="nav-mark">FF</span>
+      <span class="nav-brand-text">FinFit <em>/ Architecture Review</em></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#summary">Summary</a>
+      <a href="#compare">Comparison</a>
+      <a href="#diagrams">Diagrams</a>
+      <a href="#scenario">Load Test</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#cost">Cost</a>
+      <a href="#recommendation">Verdict</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ 1. HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <svg class="hero-grid" viewBox="0 0 1440 900" preserveAspectRatio="none"><defs><pattern id="ledgerGrid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="currentColor" stroke-width="1"/></pattern></defs><rect width="1440" height="900" fill="url(#ledgerGrid)"/></svg>
+      <div class="hero-glow"></div>
+    </div>
+    <div class="hero-inner">
+      <p class="eyebrow">Architecture Decision Record · FinFit</p>
+      <h1 class="hero-title">Existing Plan <span class="vs">vs</span> Production Plan</h1>
+      <p class="hero-sub">Which architecture should power FinFit?</p>
+      <p class="hero-tagline">Choosing the right architecture today determines whether tomorrow brings scale, reliability, and user trust — or technical debt.</p>
+
+      <div class="hero-ratings">
+        <div class="rating-card rating-existing">
+          <span class="rating-label">Existing Plan</span>
+          <span class="rating-score">8.0<em>/10</em></span>
+          <span class="rating-tag">Fast to ship, fragile at scale</span>
+        </div>
+        <div class="rating-vs-mark" aria-hidden="true">→</div>
+        <div class="rating-card rating-production">
+          <span class="rating-label">Production Plan</span>
+          <span class="rating-score">9.6<em>/10</em></span>
+          <span class="rating-tag">Built to hold real money</span>
+        </div>
+      </div>
+
+      <div class="hero-winner">
+        <span class="winner-dot"></span>
+        Recommended: <strong>Production Hybrid Approach</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. EXECUTIVE SUMMARY ============ -->
+  <section class="section" id="summary">
+    <div class="section-inner">
+      <p class="section-eyebrow">01 — Executive Summary</p>
+      <h2 class="section-title">Neither extreme wins. The hybrid does.</h2>
+      <p class="section-lede">FinFit handles people's money. That single fact changes which shortcuts are safe to take — and which ones become liabilities the day usage spikes.</p>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-num">01</span>
+          <h3>The existing plan is right for a demo, not a ledger</h3>
+          <p>React Native + Supabase gets FinFit into users' hands in days. But financial math running on the client means every number on screen is a claim the server never checked. That's fine for a prototype. It's not fine for a balance.</p>
+        </div>
+        <div class="summary-card">
+          <span class="summary-num">02</span>
+          <h3>The production plan is correct — and too much, too soon</h3>
+          <p>A FastAPI layer, background workers, read replicas, and isolated AI services are exactly what FinFit needs at 10,000 concurrent users. Built on day one, they're also months of engineering the MVP doesn't have time for.</p>
+        </div>
+        <div class="summary-card summary-card--accent">
+          <span class="summary-num">03</span>
+          <h3>The hybrid wins because it sequences the risk correctly</h3>
+          <p>Ship on Supabase for speed, but move financial calculations and business logic server-side from day one. Everything else — Cloudflare, workers, read replicas, observability — layers in as a scheduled migration, not a rewrite under pressure.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Why this matters</span>
+        <p>A UI bug shows the wrong color. A financial logic bug shows the wrong balance. FinFit only gets to be wrong about the first kind.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. COMPARISON TABLE ============ -->
+  <section class="section section--muted" id="compare">
+    <div class="section-inner">
+      <p class="section-eyebrow">02 — Side-by-Side Comparison</p>
+      <h2 class="section-title">Twelve dimensions, read like a diff</h2>
+      <p class="section-lede">Green wins the dimension. Amber is workable with caveats. Red is a real weakness — not a nitpick.</p>
+
+      <div class="legend">
+        <span class="legend-item"><i class="dot dot--green"></i> Winner</span>
+        <span class="legend-item"><i class="dot dot--amber"></i> Acceptable</span>
+        <span class="legend-item"><i class="dot dot--red"></i> Weakness</span>
+      </div>
+
+      <div class="diff-table" id="diffTable">
+        <div class="diff-row diff-head">
+          <div class="diff-cell diff-cell--label">Dimension</div>
+          <div class="diff-cell diff-cell--plan">Existing Plan</div>
+          <div class="diff-cell diff-cell--plan">Production Plan</div>
+        </div>
+        <!-- rows injected by JS from data below, but written statically for no-JS resilience -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. INTERACTIVE ARCHITECTURE DIAGRAMS ============ -->
+  <section class="section" id="diagrams">
+    <div class="section-inner">
+      <p class="section-eyebrow">03 — Architecture Diagrams</p>
+      <h2 class="section-title">Same product, two very different circuits</h2>
+      <p class="section-lede">Hover any node for what it actually does. Watch how a request travels through each system.</p>
+
+      <div class="diagrams-grid">
+        <div class="diagram-card diagram-card--legacy">
+          <h3>Existing Plan <span class="diagram-tag">4 hops</span></h3>
+          <div class="diagram-svg-wrap" id="diagramLegacy"></div>
+          <p class="diagram-caption">The client talks straight to the database. Every financial number is computed on a phone you don't control.</p>
+        </div>
+        <div class="diagram-card diagram-card--prod">
+          <h3>Production Plan <span class="diagram-tag">6 hops, guarded</span></h3>
+          <div class="diagram-svg-wrap" id="diagramProd"></div>
+          <p class="diagram-caption">Every request is validated, rate-limited, and processed server-side before it touches a balance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. REAL-TIME PRODUCTION SCENARIO ============ -->
+  <section class="section section--dark" id="scenario">
+    <div class="section-inner">
+      <p class="section-eyebrow">04 — Load Test, Told as a Story</p>
+      <h2 class="section-title">Salary day. 10,000 users. One minute.</h2>
+      <p class="section-lede">It's the 1st of the month. Salaries land. Everyone opens FinFit within the same sixty seconds to log expenses. Here's what each architecture does next.</p>
+
+      <div class="scenario-grid">
+        <div class="scenario-col scenario-col--legacy">
+          <h3>Existing Plan</h3>
+          <ol class="scenario-timeline" id="scenarioLegacy"></ol>
+        </div>
+        <div class="scenario-col scenario-col--prod">
+          <h3>Production Plan</h3>
+          <ol class="scenario-timeline" id="scenarioProd"></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. REAL-WORLD ANALOGIES ============ -->
+  <section class="section" id="analogies">
+    <div class="section-inner">
+      <p class="section-eyebrow">05 — In Plain Terms</p>
+      <h2 class="section-title">Why a backend layer matters, without the jargon</h2>
+
+      <div class="analogy-grid">
+        <article class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20V10a4 4 0 0 1 8 0M20 20V6a4 4 0 0 1 8 0v14M28 20V10a4 4 0 0 1 8 0v10M10 20h28l-2 20H12z"/></svg>
+          </div>
+          <h3>The Restaurant Kitchen</h3>
+          <p>A diner never walks into the kitchen to grab their own steak off the grill. A server takes the order, the kitchen prepares it under supervision, and quality is checked before it reaches the table. The existing plan lets the customer cook in the back. The production plan keeps a kitchen between the request and the result.</p>
+        </article>
+        <article class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M24 6v12M14 42l10-24 10 24M8 42h32M18 30h12"/></svg>
+          </div>
+          <h3>The Airport Control Tower</h3>
+          <p>Planes don't land whenever they want, in whatever order they arrive. A control tower sequences them, holds some back, and clears others — so nothing collides on a single runway. Direct client-to-database writes are planes landing with no tower. Idempotency checks and rate limiting are the tower.</p>
+        </article>
+        <article class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="8" y="18" width="32" height="20" rx="2"/><path d="M14 18v-4a10 10 0 0 1 20 0v4M18 28h12"/></svg>
+          </div>
+          <h3>The Banking System</h3>
+          <p>A bank never lets a teller update your balance directly from a note you handed them — a back office validates, logs, and reconciles every transaction before it's final. That's what server-side financial logic does for FinFit: the balance you see is the balance the system verified, not the balance the app calculated.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. PROJECT FLOW COMPARISON ============ -->
+  <section class="section section--muted" id="flows">
+    <div class="section-inner">
+      <p class="section-eyebrow">06 — End-to-End Flow</p>
+      <h2 class="section-title">From tap to confirmed, step by step</h2>
+
+      <div class="flows-grid">
+        <div class="flow-col">
+          <h3>Existing Plan <span class="flow-steps-count">5 steps</span></h3>
+          <ol class="flow-steps" id="flowLegacy"></ol>
+        </div>
+        <div class="flow-col flow-col--prod">
+          <h3>Production Plan <span class="flow-steps-count">7 steps</span></h3>
+          <ol class="flow-steps" id="flowProd"></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. MIGRATION ROADMAP ============ -->
+  <section class="section" id="roadmap">
+    <div class="section-inner">
+      <p class="section-eyebrow">07 — Migration Roadmap</p>
+      <h2 class="section-title">Five phases from MVP to production-grade</h2>
+      <p class="section-lede">No rewrite. Each phase ships independently and leaves FinFit shippable the whole way through.</p>
+
+      <div class="roadmap-rail" id="roadmapRail"></div>
+    </div>
+  </section>
+
+  <!-- ============ 9. COST ANALYSIS ============ -->
+  <section class="section section--muted" id="cost">
+    <div class="section-inner">
+      <p class="section-eyebrow">08 — Cost Analysis</p>
+      <h2 class="section-title">What each plan costs, at scale</h2>
+      <p class="section-lede">Over-engineering on day one isn't just wasted effort — it's cash that should have gone to distribution, sitting idle in infrastructure nobody needs yet.</p>
+
+      <div class="cost-table-wrap">
+        <table class="cost-table" id="costTable"></table>
+      </div>
+
+      <div class="callout callout--warning">
+        <span class="callout-label">Why over-engineering early is dangerous</span>
+        <p>Building read replicas and dedicated workers for 1,000 users adds real monthly cost and operational surface area for a load your infrastructure could handle on a single Supabase instance. Sequence the spend to match the traffic, not the ambition.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10. FINAL RECOMMENDATION ============ -->
+  <section class="section section--final" id="recommendation">
+    <div class="section-inner">
+      <p class="section-eyebrow">09 — Final Recommendation</p>
+      <h2 class="section-title">🏆 The recommended architecture</h2>
+
+      <div class="final-diagram" id="finalDiagram"></div>
+
+      <div class="final-reasons">
+        <div class="final-reason"><h4>Cost</h4><p>Infrastructure spend scales with actual usage, not projected usage.</p></div>
+        <div class="final-reason"><h4>Reliability</h4><p>Financial logic runs server-side, verified, and idempotent from day one.</p></div>
+        <div class="final-reason"><h4>Developer productivity</h4><p>Supabase's speed is kept for everything that isn't money-critical.</p></div>
+        <div class="final-reason"><h4>Scalability</h4><p>Workers and read replicas absorb load spikes without touching the API contract.</p></div>
+        <div class="final-reason"><h4>Security</h4><p>Cloudflare and server-side validation stand between the internet and the ledger.</p></div>
+        <div class="final-reason"><h4>Production readiness</h4><p>Sentry and PostHog mean failures are visible before users report them.</p></div>
+      </div>
+
+      <p class="final-close">FinFit should evolve from MVP to production the way real money should be handled: deliberately, in verified steps, with every calculation happening somewhere it can be checked.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FinFit Architecture Review — Architecture Decision Record</span>
+    <span class="footer-muted">Prepared for engineering, product, and investor review</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
