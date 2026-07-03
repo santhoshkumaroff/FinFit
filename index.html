@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinFit — Architecture Evolution</title>
+<meta name="description" content="From startup MVP to production-ready fintech engineering. FinFit's architecture evolution, explained.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">
+      <span class="nav-mark" aria-hidden="true">◆</span>
+      <span>FinFit</span>
+      <span class="nav-sub">/architecture</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#summary">Summary</a>
+      <a href="#plans">The Plans</a>
+      <a href="#flow">Flow</a>
+      <a href="#simulator">Failure Test</a>
+      <a href="#cost">Cost</a>
+      <a href="#roadmap">Roadmap</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode" aria-pressed="false">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="nav-progress" id="navProgress"></div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <svg class="hero-ledger" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="ledgerFade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent-money)" stop-opacity="0.16"/>
+            <stop offset="100%" stop-color="var(--accent-money)" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g stroke="var(--line)" stroke-width="1">
+          <line x1="0" y1="120" x2="1200" y2="120"/>
+          <line x1="0" y1="260" x2="1200" y2="260"/>
+          <line x1="0" y1="400" x2="1200" y2="400"/>
+          <line x1="0" y1="540" x2="1200" y2="540"/>
+          <line x1="0" y1="680" x2="1200" y2="680"/>
+        </g>
+        <path d="M0,560 C150,520 250,610 400,480 C550,350 650,470 800,380 C950,290 1050,340 1200,240" fill="none" stroke="var(--accent-money)" stroke-width="2" opacity="0.5"/>
+        <path d="M0,560 C150,520 250,610 400,480 C550,350 650,470 800,380 C950,290 1050,340 1200,240 L1200,800 L0,800 Z" fill="url(#ledgerFade)"/>
+      </svg>
+    </div>
+
+    <div class="hero-inner">
+      <p class="eyebrow"><span class="eyebrow-dot"></span>Internal Engineering Review · FinFit</p>
+      <h1 class="hero-title">
+        Two architectures.<br>
+        One will survive <span class="hero-title-accent">salary day.</span>
+      </h1>
+      <p class="hero-tagline">Build fast. Stay affordable. Scale safely.</p>
+      <p class="hero-sub">An honest, line-by-line comparison of FinFit's original MVP plan against the low-cost production architecture — for the developer building it, the founder funding it, and the investor betting on it.</p>
+
+      <div class="hero-scores">
+        <div class="score-card score-card--existing">
+          <div class="score-card-head">
+            <span class="score-tag">Existing Plan</span>
+            <span class="score-status score-status--caution">MVP-grade</span>
+          </div>
+          <div class="score-value"><span class="score-num" data-count="7.5">0</span><span class="score-den">/10</span></div>
+          <p class="score-note">Fast to ship. Not built to take a hit.</p>
+        </div>
+        <div class="score-vs" aria-hidden="true">vs</div>
+        <div class="score-card score-card--new">
+          <div class="score-card-head">
+            <span class="score-tag">New Production Plan</span>
+            <span class="score-status score-status--good">Approved</span>
+          </div>
+          <div class="score-value"><span class="score-num" data-count="9.6">0</span><span class="score-den">/10</span></div>
+          <p class="score-note">Same team size. Production discipline.</p>
+        </div>
+      </div>
+
+      <div class="hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Principal Engineer Approved
+      </div>
+    </div>
+    <a href="#summary" class="scroll-cue" aria-label="Scroll to summary">
+      <span></span>
+    </a>
+  </section>
+
+  <!-- ============ EXECUTIVE SUMMARY ============ -->
+  <section class="section" id="summary">
+    <div class="section-inner">
+      <p class="section-eyebrow">01 · Executive Summary</p>
+      <h2 class="section-title">Two ways to fail, one way through.</h2>
+      <p class="section-lede">Most architecture debates get framed as "simple vs. complex." That framing is wrong. There are two real failure modes, and the right plan avoids both.</p>
+
+      <div class="risk-pair">
+        <div class="risk-card">
+          <span class="risk-label risk-label--under">Under-engineering</span>
+          <h3>Ship it raw, patch it live</h3>
+          <p>Financial logic sits on the client. There's no idempotency, no rate limiting, no fallback when a dependency goes down. It works perfectly — right up until 10,000 people open the app at the same time.</p>
+        </div>
+        <div class="risk-card">
+          <span class="risk-label risk-label--over">Over-engineering</span>
+          <h3>Build for traffic you don't have</h3>
+          <p>Kubernetes, Kafka, a microservice mesh — for three developers and a few thousand users. The team spends its runway operating infrastructure instead of shipping the product that needs to find its market.</p>
+        </div>
+      </div>
+
+      <div class="hybrid-callout">
+        <div class="hybrid-callout-mark" aria-hidden="true">◆</div>
+        <p><strong>The new plan is neither.</strong> It's a thin backend, one region, no queues, no clusters — but with money math where money math belongs: on the server, behind an idempotency check, tested in CI. It costs a little more than doing nothing. It costs a lot less than doing too much.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE PLANS ============ -->
+  <section class="section section--plans" id="plans">
+    <div class="section-inner">
+      <p class="section-eyebrow">02 · The Plans</p>
+      <h2 class="section-title">Same product. Different spine.</h2>
+      <p class="section-lede">Toggle between the two architectures below. Everything the user sees stays the same — what changes is who's allowed to touch the money.</p>
+
+      <div class="plan-toggle" role="tablist" aria-label="Select architecture plan">
+        <button class="plan-toggle-btn is-active" role="tab" aria-selected="true" data-plan="existing">Existing Plan</button>
+        <button class="plan-toggle-btn" role="tab" aria-selected="false" data-plan="new">New Production Plan</button>
+      </div>
+
+      <div class="plan-panel" data-panel="existing">
+        <div class="plan-grid">
+          <div class="plan-diagram-wrap">
+            <div class="plan-diagram-label">Architecture</div>
+            <svg viewBox="0 0 340 560" class="plan-diagram" role="img" aria-label="Existing plan architecture diagram">
+              <g class="pd-flow" stroke="var(--line-strong)" stroke-width="1.5" fill="none">
+                <line x1="170" y1="70" x2="170" y2="120"/>
+                <line x1="170" y1="180" x2="170" y2="230"/>
+                <line x1="170" y1="290" x2="170" y2="340"/>
+                <line x1="170" y1="400" x2="170" y2="450"/>
+              </g>
+              <g class="pd-node">
+                <rect x="50" y="20" width="240" height="50" rx="10"/>
+                <text x="170" y="41" class="pd-title">React Native + Expo</text>
+                <text x="170" y="58" class="pd-sub">UI · Forms · Client Logic</text>
+              </g>
+              <g class="pd-node pd-node--risk">
+                <rect x="50" y="130" width="240" height="50" rx="10"/>
+                <text x="170" y="151" class="pd-title">Supabase Auth</text>
+                <text x="170" y="168" class="pd-sub">Session + Identity</text>
+              </g>
+              <g class="pd-node pd-node--risk">
+                <rect x="50" y="240" width="240" height="50" rx="10"/>
+                <text x="170" y="258" class="pd-title">Direct Client → DB</text>
+                <text x="170" y="275" class="pd-sub">RLS Policies only</text>
+              </g>
+              <g class="pd-node">
+                <rect x="50" y="350" width="240" height="50" rx="10"/>
+                <text x="170" y="371" class="pd-title">Supabase PostgreSQL</text>
+                <text x="170" y="388" class="pd-sub">Single instance</text>
+              </g>
+              <g class="pd-node">
+                <rect x="50" y="460" width="115" height="50" rx="10"/>
+                <text x="107" y="481" class="pd-title" style="font-size:12px">Claude AI</text>
+                <text x="107" y="498" class="pd-sub">Coaching</text>
+              </g>
+              <g class="pd-node">
+                <rect x="175" y="460" width="115" height="50" rx="10"/>
+                <text x="232" y="481" class="pd-title" style="font-size:12px">Push Notifs</text>
+                <text x="232" y="498" class="pd-sub">Direct call</text>
+              </g>
+              <line x1="170" y1="400" x2="107" y2="450" stroke="var(--line-strong)" stroke-width="1.5"/>
+              <line x1="170" y1="400" x2="232" y2="450" stroke="var(--line-strong)" stroke-width="1.5"/>
+            </svg>
+            <p class="plan-diagram-caption"><span class="dot dot--risk"></span> No layer between the phone and the database.</p>
+          </div>
+
+          <div class="plan-details">
+            <div class="detail-cols">
+              <div class="detail-col">
+                <h4 class="detail-head detail-head--good">Strengths</h4>
+                <ul class="check-list check-list--good">
+                  <li>Extremely fast MVP development</li>
+                  <li>Very low infrastructure cost</li>
+                  <li>Minimal operational burden</li>
+                  <li>Small-team friendly — one or two developers can run it</li>
+                </ul>
+              </div>
+              <div class="detail-col">
+                <h4 class="detail-head detail-head--bad">Weaknesses</h4>
+                <ul class="check-list check-list--bad">
+                  <li>Financial calculations partly inside the client</li>
+                  <li>No centralized business logic</li>
+                  <li>Limited observability into failures</li>
+                  <li>Harder to maintain as rules change</li>
+                </ul>
+              </div>
+            </div>
+            <div class="quote-strip">
+              "A user with a decompiled build can read your goal formula. On this plan, they can also submit their own answer to it."
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="plan-panel is-hidden" data-panel="new">
+        <div class="plan-grid">
+          <div class="plan-diagram-wrap">
+            <div class="plan-diagram-label">Architecture</div>
+            <svg viewBox="0 0 340 700" class="plan-diagram" role="img" aria-label="New production plan architecture diagram">
+              <g class="pd-flow" stroke="var(--line-strong)" stroke-width="1.5" fill="none">
+                <line x1="170" y1="70" x2="170" y2="115"/>
+                <line x1="170" y1="170" x2="170" y2="215"/>
+                <line x1="170" y1="270" x2="170" y2="315"/>
+                <line x1="170" y1="370" x2="170" y2="415"/>
+                <line x1="170" y1="470" x2="170" y2="515"/>
+                <line x1="170" y1="570" x2="170" y2="615"/>
+              </g>
+              <g class="pd-node">
+                <rect x="50" y="20" width="240" height="50" rx="10"/>
+                <text x="170" y="41" class="pd-title">React Native + Expo</text>
+                <text x="170" y="58" class="pd-sub">UI only — zero business logic</text>
+              </g>
+              <g class="pd-node pd-node--good">
+                <rect x="50" y="120" width="240" height="50" rx="10"/>
+                <text x="170" y="141" class="pd-title">Cloudflare</text>
+                <text x="170" y="158" class="pd-sub">WAF · Rate Limiting · Free tier</text>
+              </g>
+              <g class="pd-node pd-node--good">
+                <rect x="50" y="220" width="240" height="50" rx="10"/>
+                <text x="170" y="241" class="pd-title">FastAPI</text>
+                <text x="170" y="258" class="pd-sub">Validation · Idempotency</text>
+              </g>
+              <g class="pd-node">
+                <rect x="50" y="320" width="240" height="50" rx="10"/>
+                <text x="170" y="341" class="pd-title">Supabase Auth</text>
+                <text x="170" y="358" class="pd-sub">Session + Identity</text>
+              </g>
+              <g class="pd-node pd-node--good">
+                <rect x="50" y="420" width="240" height="50" rx="10"/>
+                <text x="170" y="441" class="pd-title">Postgres RPC Functions</text>
+                <text x="170" y="458" class="pd-sub">Scores · Goals · Rewards</text>
+              </g>
+              <g class="pd-node pd-node--good">
+                <rect x="50" y="520" width="240" height="50" rx="10"/>
+                <text x="170" y="541" class="pd-title">Trigger.dev Workers</text>
+                <text x="170" y="558" class="pd-sub">Reports · Cleanup · Insights</text>
+              </g>
+              <g class="pd-node">
+                <rect x="50" y="620" width="115" height="50" rx="10"/>
+                <text x="107" y="641" class="pd-title" style="font-size:12px">AI Service</text>
+                <text x="107" y="658" class="pd-sub">Explains only</text>
+              </g>
+              <g class="pd-node">
+                <rect x="175" y="620" width="115" height="50" rx="10"/>
+                <text x="232" y="641" class="pd-title" style="font-size:12px">Sentry+PostHog</text>
+                <text x="232" y="658" class="pd-sub">Observability</text>
+              </g>
+              <line x1="170" y1="570" x2="107" y2="610" stroke="var(--line-strong)" stroke-width="1.5"/>
+              <line x1="170" y1="570" x2="232" y2="610" stroke="var(--line-strong)" stroke-width="1.5"/>
+            </svg>
+            <p class="plan-diagram-caption"><span class="dot dot--good"></span> Every write to money passes through FastAPI + an RPC function.</p>
+          </div>
+
+          <div class="plan-details">
+            <div class="detail-cols">
+              <div class="detail-col">
+                <h4 class="detail-head detail-head--good">Strengths</h4>
+                <ul class="check-list check-list--good">
+                  <li>Production-grade reliability without a platform team</li>
+                  <li>Financial logic centralized in Postgres RPC — one source of truth</li>
+                  <li>AI isolated so its outages never touch money math</li>
+                  <li>Real observability: Sentry, PostHog, GitHub Actions</li>
+                  <li>Still runs on 1–3 developers, still cheap</li>
+                </ul>
+              </div>
+              <div class="detail-col">
+                <h4 class="detail-head detail-head--bad">Trade-offs</h4>
+                <ul class="check-list check-list--bad">
+                  <li>More moving parts than a pure Supabase app</li>
+                  <li>A backend now exists, so someone owns deploying it</li>
+                  <li>Slightly slower week one, in exchange for no rewrite later</li>
+                </ul>
+              </div>
+            </div>
+            <div class="quote-strip quote-strip--good">
+              "No Kubernetes. No Kafka. No microservices. No Redis, initially. Just the money logic in the right place."
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resp-table-wrap">
+        <h3 class="subhead">Who's responsible for what, in the new plan</h3>
+        <div class="resp-grid">
+          <div class="resp-card">
+            <span class="resp-icon">▲</span>
+            <h4>React Native</h4>
+            <p>UI, forms, charts, user interaction. Nothing that decides an outcome.</p>
+          </div>
+          <div class="resp-card">
+            <span class="resp-icon">▲</span>
+            <h4>FastAPI</h4>
+            <p>Validation, idempotency, external APIs, merchant mapping, AI orchestration, notifications.</p>
+          </div>
+          <div class="resp-card">
+            <span class="resp-icon">▲</span>
+            <h4>Postgres RPC</h4>
+            <p>Financial scores, goal calculations, savings logic, reward rules, monthly summaries.</p>
+          </div>
+          <div class="resp-card">
+            <span class="resp-icon">▲</span>
+            <h4>Trigger.dev</h4>
+            <p>Weekly reports, notifications, AI insights, cleanup tasks — off the request path.</p>
+          </div>
+        </div>
+        <div class="ai-callout">
+          <strong>On AI:</strong> it generates explanations only. It never performs financial calculations, goal computations, business decisions, or savings formulas. If the AI service is down, the numbers are still correct.
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="compare-table" id="compareTable">
+          <caption class="sr-only">Full comparison across engineering dimensions</caption>
+          <thead>
+            <tr>
+              <th scope="col">Dimension</th>
+              <th scope="col">Existing Plan</th>
+              <th scope="col">New Production Plan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Development speed</th><td>Fastest — days to first build</td><td class="td-good">Slightly slower start, faster after month 1</td></tr>
+            <tr><th scope="row">MVP delivery</th><td class="td-good">Excellent</td><td>Good — one extra service to stand up</td></tr>
+            <tr><th scope="row">Scalability</th><td class="td-bad">Breaks down under concurrent write bursts</td><td class="td-good">Built for 5K–10K concurrent users</td></tr>
+            <tr><th scope="row">Security</th><td class="td-bad">RLS protects rows, not calculations</td><td class="td-good">Server is sole source of financial truth</td></tr>
+            <tr><th scope="row">Multi-user handling</th><td class="td-bad">No app-level rate limiting</td><td class="td-good">Cloudflare + FastAPI isolate abuse</td></tr>
+            <tr><th scope="row">Maintainability</th><td class="td-bad">Logic duplicated across app builds</td><td class="td-good">One backend, one fix, no store review</td></tr>
+            <tr><th scope="row">Testing</th><td class="td-bad">Business logic buried in UI components</td><td class="td-good">RPC + API logic tested in CI</td></tr>
+            <tr><th scope="row">Monitoring</th><td class="td-bad">Supabase dashboard only</td><td class="td-good">Sentry + PostHog, real traces</td></tr>
+            <tr><th scope="row">Deployment safety</th><td class="td-bad">App-store release cycle for logic fixes</td><td class="td-good">GitHub Actions, fast rollback</td></tr>
+            <tr><th scope="row">Cost</th><td class="td-good">Lowest at tiny scale</td><td>Modest increase, still low-cost</td></tr>
+            <tr><th scope="row">Operational complexity</th><td class="td-good">Near zero</td><td>Real, but scoped to 1–3 developers</td></tr>
+            <tr><th scope="row">Long-term evolution</th><td class="td-bad">Rewrite of logic layer is a when, not an if</td><td class="td-good">Grows in place, phase by phase</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FLOW COMPARISON ============ -->
+  <section class="section section--flow" id="flow">
+    <div class="section-inner">
+      <p class="section-eyebrow">03 · Request Flow</p>
+      <h2 class="section-title">One tap. Two very different journeys.</h2>
+      <p class="section-lede">Trace what happens the moment a user logs an expense.</p>
+
+      <div class="flow-grid">
+        <div class="flow-col">
+          <h3 class="flow-col-title flow-col-title--risk">Existing Flow</h3>
+          <ol class="flow-steps">
+            <li><span class="flow-step-n">1</span><div><strong>User</strong><p>Taps "Save expense"</p></div></li>
+            <li><span class="flow-step-n">2</span><div><strong>Client validation</strong><p>Runs on the phone, in JS anyone can read</p></div></li>
+            <li><span class="flow-step-n flow-step-n--risk">3</span><div><strong>Client calculations</strong><p>Score, streak, and goal math computed on-device</p></div></li>
+            <li><span class="flow-step-n">4</span><div><strong>Database</strong><p>Accepts whatever the client sends, gated only by RLS</p></div></li>
+            <li><span class="flow-step-n">5</span><div><strong>AI</strong><p>Called directly — if it hangs, the screen hangs</p></div></li>
+            <li><span class="flow-step-n">6</span><div><strong>Notifications</strong><p>Fired client-side</p></div></li>
+          </ol>
+        </div>
+        <div class="flow-col">
+          <h3 class="flow-col-title flow-col-title--good">New Flow</h3>
+          <ol class="flow-steps">
+            <li><span class="flow-step-n">1</span><div><strong>User</strong><p>Taps "Save expense"</p></div></li>
+            <li><span class="flow-step-n">2</span><div><strong>Cloudflare</strong><p>WAF + rate limiting before the request reaches your servers</p></div></li>
+            <li><span class="flow-step-n">3</span><div><strong>FastAPI validation</strong><p>Rejects malformed or hostile requests</p></div></li>
+            <li><span class="flow-step-n flow-step-n--good">4</span><div><strong>Idempotency check</strong><p>A retried tap can't create a second row</p></div></li>
+            <li><span class="flow-step-n flow-step-n--good">5</span><div><strong>Postgres RPC</strong><p>The only place score and goal math is allowed to happen</p></div></li>
+            <li><span class="flow-step-n">6</span><div><strong>Database transaction</strong><p>Commits atomically, or not at all</p></div></li>
+            <li><span class="flow-step-n">7</span><div><strong>Trigger.dev worker</strong><p>Handles anything that doesn't need to block the tap</p></div></li>
+            <li><span class="flow-step-n">8</span><div><strong>AI explanation</strong><p>Adds color commentary — never blocks the save</p></div></li>
+            <li><span class="flow-step-n">9</span><div><strong>Notification delivery</strong><p>Sent from the backend, retried if it fails</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SIMULATOR ============ -->
+  <section class="section section--sim" id="simulator">
+    <div class="section-inner">
+      <p class="section-eyebrow">04 · Real-World Production Scenario</p>
+      <h2 class="section-title">Salary day. 10,000 people, same 30 minutes.</h2>
+      <p class="section-lede">This is the scenario that actually decides which architecture is correct. Run it.</p>
+
+      <button class="sim-trigger" id="simTrigger">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h7l-1 8 11-14h-7l1-8z"/></svg>
+        <span id="simTriggerLabel">Trigger salary-day spike</span>
+      </button>
+
+      <div class="sim-grid">
+        <div class="sim-panel" id="simExisting">
+          <div class="sim-panel-head">
+            <h3>Existing Plan</h3>
+            <span class="sim-status" id="simStatusExisting">Idle</span>
+          </div>
+          <div class="sim-events" id="simEventsExisting"></div>
+        </div>
+        <div class="sim-panel sim-panel--good" id="simNew">
+          <div class="sim-panel-head">
+            <h3>New Production Plan</h3>
+            <span class="sim-status" id="simStatusNew">Idle</span>
+          </div>
+          <div class="sim-events" id="simEventsNew"></div>
+        </div>
+      </div>
+
+      <p class="sim-caption">Simulated for illustration — reflects the architectural behavior described in this review, not live telemetry.</p>
+    </div>
+  </section>
+
+  <!-- ============ ANALOGIES ============ -->
+  <section class="section" id="analogies">
+    <div class="section-inner">
+      <p class="section-eyebrow">05 · In Plain Language</p>
+      <h2 class="section-title">Four ways to explain this to anyone.</h2>
+
+      <div class="analogy-grid">
+        <div class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">🍳</div>
+          <h3>The restaurant kitchen</h3>
+          <p>In the existing plan, every customer walks into the kitchen and seasons their own plate. In the new plan, orders go through a line cook who follows the recipe every time — the customer still picks the dish, they just don't touch the stove.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">🗼</div>
+          <h3>The airport control tower</h3>
+          <p>Existing plan: every pilot radios the runway directly and hopes nobody lands at the same time. New plan: a tower coordinates, so collisions are structurally prevented — not just less likely.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">🏦</div>
+          <h3>The bank teller</h3>
+          <p>No bank lets a customer write their own ledger entry and hand it over for filing. Every deposit is checked, logged, and reconciled by the bank first. That check is the FastAPI + RPC layer.</p>
+        </div>
+        <div class="analogy-card">
+          <div class="analogy-icon" aria-hidden="true">🚑</div>
+          <h3>The emergency room</h3>
+          <p>A hospital doesn't let one overwhelmed patient intake desk decide who gets seen. Triage, monitoring, and escalation exist so one bad moment doesn't become a systemic failure — that's what Sentry and rate limiting do here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COST ANALYSIS ============ -->
+  <section class="section section--cost" id="cost">
+    <div class="section-inner">
+      <p class="section-eyebrow">06 · Cost Analysis</p>
+      <h2 class="section-title">Maximum quality, minimum cost.</h2>
+      <p class="section-lede">Approximate monthly infrastructure cost. Directional, not a quote — pricing shifts, treat this as a planning range.</p>
+
+      <div class="cost-table-wrap">
+        <table class="cost-table">
+          <thead>
+            <tr>
+              <th scope="col">Users</th>
+              <th scope="col">Existing Plan</th>
+              <th scope="col">New Production Plan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1,000</th>
+              <td><span class="cost-amt">$25–50</span><span class="cost-note">Supabase alone</span></td>
+              <td><span class="cost-amt cost-amt--good">$60–120</span><span class="cost-note">Free-tier Cloudflare, tiny FastAPI instance</span></td>
+            </tr>
+            <tr>
+              <th scope="row">5,000</th>
+              <td><span class="cost-amt">$60–150</span><span class="cost-note">Nearing connection limits</span></td>
+              <td><span class="cost-amt cost-amt--good">$150–300</span><span class="cost-note">Still one region, one small server</span></td>
+            </tr>
+            <tr>
+              <th scope="row">10,000</th>
+              <td><span class="cost-amt cost-amt--bad">$100–250+</span><span class="cost-note">Reliability degrades before cost does</span></td>
+              <td><span class="cost-amt cost-amt--good">$300–600</span><span class="cost-note">Idempotency + rate limiting still holding</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cost-footnote">The real cost of the existing plan at 10,000 users isn't the invoice — it's the incident. A duplicated payout or a corrupted goal balance costs far more in trust than a FastAPI instance costs in dollars.</p>
+    </div>
+  </section>
+
+  <!-- ============ ROADMAP ============ -->
+  <section class="section section--roadmap" id="roadmap">
+    <div class="section-inner">
+      <p class="section-eyebrow">07 · Scaling Journey</p>
+      <h2 class="section-title">Evolve on purpose, not under pressure.</h2>
+      <p class="section-lede">Each phase is a real checkpoint, not a hard deadline — reassess when traffic tells you to, not before.</p>
+
+      <div class="timeline">
+        <div class="timeline-line" aria-hidden="true"></div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">01</div>
+          <div class="timeline-content">
+            <h3>Foundation</h3>
+            <p>React Native, FastAPI, Supabase, Postgres RPC. Money logic server-side from day one — this is the one step that isn't optional.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">02</div>
+          <div class="timeline-content">
+            <h3>Operate</h3>
+            <p>Trigger.dev for background work, Sentry for errors, PostHog for product analytics. Now you can see what's actually happening.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">03</div>
+          <div class="timeline-content">
+            <h3>Scale reads</h3>
+            <p>Redis for hot, repeated reads. A Postgres read replica to take reporting load off the primary.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">04</div>
+          <div class="timeline-content">
+            <h3>Harden deploys</h3>
+            <p>Blue-green deployments. Instant rollback. This is where you stop being able to take an app-store-length outage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL RECOMMENDATION ============ -->
+  <section class="section section--final" id="final">
+    <div class="section-inner">
+      <p class="section-eyebrow">08 · Final Recommendation</p>
+      <h2 class="section-title">Ship the new plan.</h2>
+      <p class="section-lede">Not because it's impressive. Because it's the smallest architecture that still tells the truth about a user's money, every time.</p>
+
+      <div class="final-diagram-wrap">
+        <svg viewBox="0 0 900 140" class="final-diagram" role="img" aria-label="Final recommended architecture, left to right">
+          <g class="fd-flow" stroke="var(--line-strong)" stroke-width="1.5">
+            <line x1="120" y1="70" x2="150" y2="70"/>
+            <line x1="240" y1="70" x2="270" y2="70"/>
+            <line x1="360" y1="70" x2="390" y2="70"/>
+            <line x1="480" y1="70" x2="510" y2="70"/>
+            <line x1="600" y1="70" x2="630" y2="70"/>
+            <line x1="720" y1="70" x2="750" y2="70"/>
+          </g>
+          <g class="fd-node"><rect x="10" y="45" width="110" height="50" rx="10"/><text x="65" y="66" class="pd-title" style="font-size:11px">React Native</text><text x="65" y="82" class="pd-sub" style="font-size:9px">UI only</text></g>
+          <g class="fd-node"><rect x="150" y="45" width="90" height="50" rx="10"/><text x="195" y="66" class="pd-title" style="font-size:11px">Cloudflare</text><text x="195" y="82" class="pd-sub" style="font-size:9px">WAF</text></g>
+          <g class="fd-node"><rect x="270" y="45" width="90" height="50" rx="10"/><text x="315" y="66" class="pd-title" style="font-size:11px">FastAPI</text><text x="315" y="82" class="pd-sub" style="font-size:9px">Rules</text></g>
+          <g class="fd-node"><rect x="390" y="45" width="90" height="50" rx="10"/><text x="435" y="66" class="pd-title" style="font-size:11px">Supabase</text><text x="435" y="82" class="pd-sub" style="font-size:9px">Auth</text></g>
+          <g class="fd-node fd-node--core"><rect x="510" y="45" width="90" height="50" rx="10"/><text x="555" y="66" class="pd-title" style="font-size:11px">Postgres RPC</text><text x="555" y="82" class="pd-sub" style="font-size:9px">Money math</text></g>
+          <g class="fd-node"><rect x="630" y="45" width="90" height="50" rx="10"/><text x="675" y="66" class="pd-title" style="font-size:11px">Trigger.dev</text><text x="675" y="82" class="pd-sub" style="font-size:9px">Workers</text></g>
+          <g class="fd-node"><rect x="750" y="45" width="140" height="50" rx="10"/><text x="820" y="66" class="pd-title" style="font-size:11px">Sentry+PostHog</text><text x="820" y="82" class="pd-sub" style="font-size:9px">Observability</text></g>
+        </svg>
+      </div>
+
+      <div class="final-score-block">
+        <div class="final-score-num"><span data-count="9.6">0</span><span class="final-score-den">/10</span></div>
+        <div class="final-badge">Low-Cost Production Architecture</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>FinFit Architecture Review — internal engineering document. Figures are directional estimates, not vendor quotes.</p>
+    </div>
+  </footer>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
